@@ -17,14 +17,38 @@
 
 package me.banes.chris.tivi.home
 
+import android.support.v4.app.FragmentTransaction
+import me.banes.chris.tivi.R
 import me.banes.chris.tivi.data.TiviShow
+import me.banes.chris.tivi.home.discover.DiscoverFragment
+import me.banes.chris.tivi.home.library.LibraryFragment
 
 interface HomeNavigator {
-
-    fun showPopular()
-
-    fun showTrending()
-
+    fun showDiscover()
+    fun showLibrary()
     fun showShowDetails(tiviShow: TiviShow)
+}
+
+internal class HomeNavigatorImpl(private val activity: HomeActivity) : HomeNavigator {
+
+    override fun showDiscover() {
+        activity.supportFragmentManager
+                .beginTransaction()
+                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+                .replace(R.id.home_content, DiscoverFragment())
+                .commit()
+    }
+
+    override fun showLibrary() {
+        activity.supportFragmentManager
+                .beginTransaction()
+                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+                .replace(R.id.home_content, LibraryFragment())
+                .commit()
+    }
+
+    override fun showShowDetails(tiviShow: TiviShow) {
+        // TODO
+    }
 
 }

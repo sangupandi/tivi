@@ -40,7 +40,7 @@ import me.banes.chris.tivi.ui.SpacingItemDecorator
 import me.banes.chris.tivi.ui.groupieitems.ShowPosterItem
 import me.banes.chris.tivi.ui.groupieitems.ShowPosterUpdatingSection
 
-internal class DiscoverFragment : HomeFragment<DiscoverViewModel>() {
+class DiscoverFragment : HomeFragment<DiscoverViewModel>() {
 
     private lateinit var gridLayoutManager: GridLayoutManager
     private val groupAdapter = GroupAdapter<ViewHolder>()

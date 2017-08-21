@@ -23,13 +23,14 @@ import dagger.Module
 import dagger.android.ContributesAndroidInjector
 import dagger.multibindings.IntoMap
 import me.banes.chris.tivi.home.discover.DiscoverFragment
+import me.banes.chris.tivi.home.discover.DiscoverModule
 import me.banes.chris.tivi.home.discover.DiscoverViewModel
 import me.banes.chris.tivi.inject.ViewModelKey
 
 @Module
 internal abstract class DiscoverBuilder {
 
-    @ContributesAndroidInjector
+    @ContributesAndroidInjector(modules = arrayOf(DiscoverModule::class))
     internal abstract fun discoverFragment(): DiscoverFragment
 
     @Binds

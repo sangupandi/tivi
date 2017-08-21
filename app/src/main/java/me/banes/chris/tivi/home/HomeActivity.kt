@@ -22,18 +22,11 @@ import android.arch.lifecycle.ViewModelProvider
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.os.Bundle
-import android.support.design.widget.Snackbar
-import android.support.v4.app.Fragment
-import android.support.v4.app.FragmentTransaction
 import kotlinx.android.synthetic.main.activity_home.*
 import me.banes.chris.tivi.Constants
 import me.banes.chris.tivi.R
 import me.banes.chris.tivi.TiviActivity
-import me.banes.chris.tivi.data.TiviShow
 import me.banes.chris.tivi.home.HomeActivityViewModel.NavigationItem.*
-import me.banes.chris.tivi.home.discover.DiscoverFragment
-import me.banes.chris.tivi.home.library.LibraryFragment
-import me.banes.chris.tivi.home.trending.PopularShowsFragment
 import net.openid.appauth.AuthorizationException
 import net.openid.appauth.AuthorizationResponse
 import javax.inject.Inject
@@ -91,53 +84,13 @@ class HomeActivity : TiviActivity() {
     }
 
     private fun showNavigationItem(item: HomeActivityViewModel.NavigationItem) {
-        val newFragment: Fragment
-        val newItemId: Int
-
-        when (item) {
-            DISCOVER -> {
-                newFragment = DiscoverFragment()
-                newItemId = R.id.home_nav_discover
-            }
-            LIBRARY -> {
-                newFragment = LibraryFragment()
-                newItemId = R.id.home_nav_collection
-            }
+        val newItemId = when (item) {
+            DISCOVER -> R.id.home_nav_discover
+            LIBRARY -> R.id.home_nav_collection
         }
-
-        supportFragmentManager
-                .beginTransaction()
-                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
-                .replace(R.id.home_content, newFragment)
-                .commit()
-
         // Now make the bottom nav show the correct item
         if (home_bottom_nav.selectedItemId != newItemId) {
             home_bottom_nav.menu.findItem(newItemId)?.isChecked = true
-        }
-    }
-
-    val navigator = object : HomeNavigator {
-        override fun showPopular() {
-            supportFragmentManager
-                    .beginTransaction()
-                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                    .replace(R.id.home_content, PopularShowsFragment())
-                    .addToBackStack(null)
-                    .commit()
-        }
-
-        override fun showTrending() {
-            supportFragmentManager
-                    .beginTransaction()
-                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                    .replace(R.id.home_content, PopularShowsFragment())
-                    .addToBackStack(null)
-                    .commit()
-        }
-
-        override fun showShowDetails(tiviShow: TiviShow) {
-            Snackbar.make(home_bottom_nav, "TODO: Open show details", Snackbar.LENGTH_SHORT).show()
         }
     }
 

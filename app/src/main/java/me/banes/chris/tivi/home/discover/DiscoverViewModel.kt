@@ -29,11 +29,12 @@ import me.banes.chris.tivi.util.AppRxSchedulers
 import plusAssign
 import javax.inject.Inject
 
-internal class DiscoverViewModel @Inject constructor(
+class DiscoverViewModel @Inject constructor(
         private val schedulers: AppRxSchedulers,
         private val popularCall: PopularCall,
         private val trendingCall: TrendingCall,
-        private val navigator: HomeNavigator,
+        private val navigator: DiscoverNavigator,
+        private val homeNavigator: HomeNavigator,
         traktManager: TraktManager) : HomeFragmentViewModel(traktManager) {
 
     private val items = mapOf(
@@ -78,11 +79,14 @@ internal class DiscoverViewModel @Inject constructor(
     }
 
     fun onSectionHeaderClicked(section: Section) {
-        navigator.showTrending()
+        when (section) {
+            //TRENDING -> navigator.showTrending()
+            //POPULAR -> navigator.showPopular()
+        }
     }
 
     fun onItemPostedClicked(show: TiviShow) {
-        navigator.showShowDetails(show)
+        homeNavigator.showShowDetails(show)
     }
 
 }

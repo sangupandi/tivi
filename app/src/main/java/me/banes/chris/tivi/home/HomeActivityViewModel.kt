@@ -25,7 +25,9 @@ import net.openid.appauth.AuthorizationException
 import net.openid.appauth.AuthorizationResponse
 import javax.inject.Inject
 
-internal class HomeActivityViewModel @Inject constructor(private val traktManager: TraktManager) : ViewModel() {
+internal class HomeActivityViewModel @Inject constructor(
+        private val traktManager: TraktManager,
+        private val homeNavigator: HomeNavigator) : ViewModel() {
 
     enum class NavigationItem {
         DISCOVER, LIBRARY
@@ -42,10 +44,15 @@ internal class HomeActivityViewModel @Inject constructor(private val traktManage
     init {
         // Set default value
         mutableNavLiveData.value = NavigationItem.DISCOVER
+        homeNavigator.showDiscover()
     }
 
     fun onNavigationItemClicked(item: NavigationItem) {
         mutableNavLiveData.value = item
+        when (item) {
+            NavigationItem.DISCOVER -> homeNavigator.showDiscover()
+            NavigationItem.LIBRARY -> homeNavigator.showLibrary()
+        }
     }
 
     fun onAuthResponse(response: AuthorizationResponse?, ex: AuthorizationException?) {

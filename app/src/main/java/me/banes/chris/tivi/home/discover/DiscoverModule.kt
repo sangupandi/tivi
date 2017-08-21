@@ -15,15 +15,15 @@
  *
  */
 
-package me.banes.chris.tivi.home
+package me.banes.chris.tivi.home.discover
 
 import dagger.Module
 import dagger.Provides
 
 @Module
-class HomeModule {
+class DiscoverModule {
 
     @Provides
-    fun provideNavigator(activity: HomeActivity): HomeNavigator = HomeNavigatorImpl(activity)
+    fun provideNavigator(fragment: DiscoverFragment): DiscoverNavigator = DiscoverNavigatorImpl(fragment)
 
 }
