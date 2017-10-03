@@ -21,6 +21,7 @@ import com.uwetrottmann.tmdb2.Tmdb
 import com.uwetrottmann.tmdb2.entities.TvShow
 import com.uwetrottmann.trakt5.TraktV2
 import io.reactivex.Completable
+import io.reactivex.Flowable
 import io.reactivex.Maybe
 import io.reactivex.Single
 import me.banes.chris.tivi.data.Page
@@ -48,6 +49,10 @@ abstract class PaginatedTraktCall<RS>(
         return createPagedListProvider()
     }
 
+    fun getFlowable(): Flowable<List<TiviShow>> {
+        return createFlowable()
+    }
+
     private fun loadPage(page: Int = 0, resetOnSave: Boolean = false): Single<List<TiviShow>> {
         return networkCall(page, pageSize)
                 .subscribeOn(schedulers.network)
@@ -67,6 +72,8 @@ abstract class PaginatedTraktCall<RS>(
     protected abstract fun lastPageLoaded(): Single<Int>
 
     protected abstract fun createPagedListProvider(): LivePagedListProvider<Int, TiviShow>
+
+    protected abstract fun createFlowable(): Flowable<List<TiviShow>>
 
     fun refresh(): Completable {
         return loadPage(0, resetOnSave = true).toCompletable()

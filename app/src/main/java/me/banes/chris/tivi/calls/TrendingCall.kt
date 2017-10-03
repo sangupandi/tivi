@@ -21,6 +21,7 @@ import com.uwetrottmann.tmdb2.Tmdb
 import com.uwetrottmann.trakt5.TraktV2
 import com.uwetrottmann.trakt5.entities.TrendingShow
 import com.uwetrottmann.trakt5.enums.Extended
+import io.reactivex.Flowable
 import io.reactivex.Maybe
 import io.reactivex.Single
 import me.banes.chris.tivi.data.TiviShow
@@ -43,6 +44,10 @@ class TrendingCall @Inject constructor(
 
     override fun createPagedListProvider(): LivePagedListProvider<Int, TiviShow> {
         return trendingDao.trendingPagedList()
+    }
+
+    override fun createFlowable(): Flowable<List<TiviShow>> {
+        return trendingDao.trendingShowsPage(0)
     }
 
     override fun networkCall(page: Int, pageSize: Int): Single<List<TrendingShow>> {

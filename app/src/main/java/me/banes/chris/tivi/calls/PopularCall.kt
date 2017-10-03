@@ -21,6 +21,7 @@ import com.uwetrottmann.tmdb2.Tmdb
 import com.uwetrottmann.trakt5.TraktV2
 import com.uwetrottmann.trakt5.entities.Show
 import com.uwetrottmann.trakt5.enums.Extended
+import io.reactivex.Flowable
 import io.reactivex.Maybe
 import io.reactivex.Single
 import me.banes.chris.tivi.data.PopularDao
@@ -59,6 +60,10 @@ class PopularCall @Inject constructor(
 
     override fun createPagedListProvider(): LivePagedListProvider<Int, TiviShow> {
         return popularDao.popularPagedList()
+    }
+
+    override fun createFlowable(): Flowable<List<TiviShow>> {
+        return popularDao.popularShowsPage(0)
     }
 
     override fun saveEntry(show: TiviShow, page: Int, order: Int) {

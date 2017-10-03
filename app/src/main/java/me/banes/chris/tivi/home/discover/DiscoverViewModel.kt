@@ -51,32 +51,32 @@ internal class DiscoverViewModel @Inject constructor(
     init {
         data.value = items
 
-//        disposables += popularCall.getPagedListProvider(0)
-//                .observeOn(schedulers.main)
-//                .subscribe {
-//                    items[POPULAR]?.apply {
-//                        clear()
-//                        addAll(it)
-//                    }
-//                    getPagedListProvider.value = items
-//                }
-//
-//        disposables += trendingCall.getPagedListProvider(0)
-//                .observeOn(schedulers.main)
-//                .subscribe {
-//                    items[TRENDING]?.apply {
-//                        clear()
-//                        addAll(it)
-//                    }
-//                    getPagedListProvider.value = items
-//                }
+        disposables += popularCall.getFlowable()
+                .observeOn(schedulers.main)
+                .subscribe {
+                    items[POPULAR]?.apply {
+                        clear()
+                        addAll(it)
+                    }
+                    data.value = items
+                }
+
+        disposables += trendingCall.getFlowable()
+                .observeOn(schedulers.main)
+                .subscribe {
+                    items[TRENDING]?.apply {
+                        clear()
+                        addAll(it)
+                    }
+                    data.value = items
+                }
 
         refresh()
     }
 
     fun refresh() {
-//        disposables += popularCall.refresh().subscribe()
-//        disposables += trendingCall.refresh().subscribe()
+        disposables += popularCall.refresh().subscribe()
+        disposables += trendingCall.refresh().subscribe()
     }
 
     fun onSectionHeaderClicked(section: Section) {
