@@ -36,7 +36,8 @@ open class PaginatedTraktViewModel<R>(
         call.getPagedListProvider().create(0,
                 PagedList.Config.Builder()
                         .setPageSize(call.pageSize)
-                        .setEnablePlaceholders(false).build()!!)
+                        .setEnablePlaceholders(true)
+                        .build()!!)
     }
 
     val messages = MutableLiveData<Resource>()

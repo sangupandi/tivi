@@ -31,7 +31,7 @@ internal class ShowPosterItem(val show: TiviShow) : Item<TiviShowGridViewHolder>
     }
 
     override fun bind(viewHolder: TiviShowGridViewHolder, position: Int) {
-        viewHolder.bindShow(show)
+        viewHolder.bind(show)
     }
 
     override fun getSpanSize(spanCount: Int, position: Int) = 1

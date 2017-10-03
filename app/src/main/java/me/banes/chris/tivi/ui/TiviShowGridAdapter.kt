@@ -31,10 +31,7 @@ internal class TiviShowGridAdapter : PagedListAdapter<TiviShow, TiviShowGridView
     }
 
     override fun onBindViewHolder(holder: TiviShowGridViewHolder, position: Int) {
-        val show = getItem(position)
-        if (show != null) {
-            holder.bindShow(show)
-        }
+        holder.bind(getItem(position) ?: TiviShow.PLACEHOLDER)
     }
 }
 
