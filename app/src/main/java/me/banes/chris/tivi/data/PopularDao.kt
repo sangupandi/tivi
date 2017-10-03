@@ -16,6 +16,7 @@
 
 package me.banes.chris.tivi.data
 
+import android.arch.paging.LivePagedListProvider
 import android.arch.persistence.room.Dao
 import android.arch.persistence.room.Insert
 import android.arch.persistence.room.OnConflictStrategy
@@ -36,6 +37,11 @@ interface PopularDao {
             "WHERE page = :page " +
             "ORDER BY page_order")
     fun popularShowsPage(page: Int): Flowable<List<TiviShow>>
+
+    @Query("SELECT * FROM shows " +
+            "INNER JOIN popular_shows ON popular_shows.show_id = shows.id " +
+            "ORDER BY page, page_order")
+    fun popularPagedList(): LivePagedListProvider<Int, TiviShow>
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     fun insertPopularShows(show: PopularEntry): Long

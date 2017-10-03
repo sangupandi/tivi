@@ -72,9 +72,7 @@ abstract class PaginatedGridFragment<T, VM : PaginatedTraktViewModel<T>>(
     override fun onStart() {
         super.onStart()
 
-        viewModel.data.observe(this, Observer {
-            it?.let { adapter.updateItems(it) }
-        })
+        viewModel.data.observe(this, Observer(adapter::setList))
 
         viewModel.messages.observe(this, Observer {
             when (it?.status) {

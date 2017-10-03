@@ -18,6 +18,7 @@ package me.banes.chris.tivi.util
 
 import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
+import android.arch.paging.PagedList
 import me.banes.chris.tivi.api.Resource
 import me.banes.chris.tivi.api.Status
 import me.banes.chris.tivi.calls.PaginatedTraktCall
@@ -26,13 +27,16 @@ import me.banes.chris.tivi.extensions.plusAssign
 
 open class PaginatedTraktViewModel<R>(
         val schedulers: AppRxSchedulers,
-        val call: PaginatedTraktCall<R>) : RxAwareViewModel() {
+        private val call: PaginatedTraktCall<R>) : RxAwareViewModel() {
 
     /**
-     * This is what my UI (Fragment) observes. Its backed by Room and a network call
+     * This is what my UI (Fragment) observes. It's backed by Room and a network call
      */
-    val data: LiveData<List<TiviShow>> by lazy(mode = LazyThreadSafetyMode.NONE) {
-        ReactiveLiveData(call.data())
+    val data: LiveData<PagedList<TiviShow>> by lazy(mode = LazyThreadSafetyMode.NONE) {
+        call.getPagedListProvider().create(0,
+                PagedList.Config.Builder()
+                        .setPageSize(call.pageSize)
+                        .setEnablePlaceholders(false).build()!!)
     }
 
     val messages = MutableLiveData<Resource>()

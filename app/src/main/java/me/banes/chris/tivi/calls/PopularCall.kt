@@ -16,11 +16,11 @@
 
 package me.banes.chris.tivi.calls
 
+import android.arch.paging.LivePagedListProvider
 import com.uwetrottmann.tmdb2.Tmdb
 import com.uwetrottmann.trakt5.TraktV2
 import com.uwetrottmann.trakt5.entities.Show
 import com.uwetrottmann.trakt5.enums.Extended
-import io.reactivex.Flowable
 import io.reactivex.Maybe
 import io.reactivex.Single
 import me.banes.chris.tivi.data.PopularDao
@@ -35,16 +35,16 @@ import javax.inject.Inject
 class PopularCall @Inject constructor(
         databaseTxRunner: DatabaseTxRunner,
         showDao: TiviShowDao,
-        val popularDao: PopularDao,
+        private val popularDao: PopularDao,
         tmdb: Tmdb,
         trakt: TraktV2,
         schedulers: AppRxSchedulers)
     : PaginatedTraktCall<Show>(databaseTxRunner, showDao, tmdb, trakt, schedulers) {
 
-    override fun networkCall(page: Int): Single<List<Show>> {
+    override fun networkCall(page: Int, pageSize: Int): Single<List<Show>> {
         return trakt.shows().popular(
                 page + 1, // Trakt uses a 1 based index
-                DEFAULT_PAGE_SIZE,
+                pageSize,
                 Extended.NOSEASONS)
                 .toRxSingle()
     }
@@ -57,8 +57,8 @@ class PopularCall @Inject constructor(
         return popularDao.getLastPopularPage()
     }
 
-    override fun createData(page: Int?): Flowable<List<TiviShow>> {
-        return if (page == null) popularDao.popularShows() else popularDao.popularShowsPage(page)
+    override fun createPagedListProvider(): LivePagedListProvider<Int, TiviShow> {
+        return popularDao.popularPagedList()
     }
 
     override fun saveEntry(show: TiviShow, page: Int, order: Int) {

@@ -16,11 +16,11 @@
 
 package me.banes.chris.tivi.calls
 
+import android.arch.paging.LivePagedListProvider
 import com.uwetrottmann.tmdb2.Tmdb
 import com.uwetrottmann.trakt5.TraktV2
 import com.uwetrottmann.trakt5.entities.TrendingShow
 import com.uwetrottmann.trakt5.enums.Extended
-import io.reactivex.Flowable
 import io.reactivex.Maybe
 import io.reactivex.Single
 import me.banes.chris.tivi.data.TiviShow
@@ -41,13 +41,13 @@ class TrendingCall @Inject constructor(
         schedulers: AppRxSchedulers)
     : PaginatedTraktCall<TrendingShow>(databaseTxRunner, showDao, tmdb, trakt, schedulers) {
 
-    override fun createData(page: Int?): Flowable<List<TiviShow>> {
-        return if (page == null) trendingDao.trendingShows() else trendingDao.trendingShowsPage(page)
+    override fun createPagedListProvider(): LivePagedListProvider<Int, TiviShow> {
+        return trendingDao.trendingPagedList()
     }
 
-    override fun networkCall(page: Int): Single<List<TrendingShow>> {
+    override fun networkCall(page: Int, pageSize: Int): Single<List<TrendingShow>> {
         return trakt.shows()
-                .trending(page + 1, DEFAULT_PAGE_SIZE, Extended.NOSEASONS)
+                .trending(page + 1, pageSize, Extended.NOSEASONS)
                 .toRxSingle()
     }
 

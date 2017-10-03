@@ -16,11 +16,11 @@
 
 package me.banes.chris.tivi.calls
 
+import android.arch.paging.LivePagedListProvider
 import com.uwetrottmann.tmdb2.Tmdb
 import com.uwetrottmann.tmdb2.entities.TvShow
 import com.uwetrottmann.trakt5.TraktV2
 import io.reactivex.Completable
-import io.reactivex.Flowable
 import io.reactivex.Maybe
 import io.reactivex.Single
 import me.banes.chris.tivi.data.Page
@@ -33,25 +33,23 @@ import timber.log.Timber
 import java.util.Date
 
 abstract class PaginatedTraktCall<RS>(
-        val databaseTxRunner: DatabaseTxRunner,
-        val showDao: TiviShowDao,
+        private val databaseTxRunner: DatabaseTxRunner,
+        private val showDao: TiviShowDao,
         val tmdb: Tmdb,
         val trakt: TraktV2,
         val schedulers: AppRxSchedulers,
         var pageSize: Int = DEFAULT_PAGE_SIZE) {
 
     companion object {
-        val DEFAULT_PAGE_SIZE = 15
+        val DEFAULT_PAGE_SIZE = 21
     }
 
-    fun data(page: Int? = null): Flowable<List<TiviShow>> {
-        return createData(page)
-                .subscribeOn(schedulers.disk)
-                .distinctUntilChanged()
+    fun getPagedListProvider(): LivePagedListProvider<Int, TiviShow> {
+        return createPagedListProvider()
     }
 
     private fun loadPage(page: Int = 0, resetOnSave: Boolean = false): Single<List<TiviShow>> {
-        return networkCall(page)
+        return networkCall(page, pageSize)
                 .subscribeOn(schedulers.network)
                 .toFlowable()
                 .flatMapIterable { it }
@@ -62,13 +60,13 @@ abstract class PaginatedTraktCall<RS>(
                 .doOnSuccess { savePage(Page(page, it), resetOnSave) }
     }
 
-    protected abstract fun networkCall(page: Int): Single<List<RS>>
+    protected abstract fun networkCall(page: Int, pageSize: Int): Single<List<RS>>
 
     protected abstract fun filterResponse(response: RS): Boolean
 
     protected abstract fun lastPageLoaded(): Single<Int>
 
-    protected abstract fun createData(page: Int? = null): Flowable<List<TiviShow>>
+    protected abstract fun createPagedListProvider(): LivePagedListProvider<Int, TiviShow>
 
     fun refresh(): Completable {
         return loadPage(0, resetOnSave = true).toCompletable()
@@ -85,7 +83,7 @@ abstract class PaginatedTraktCall<RS>(
 
     protected abstract fun deletePage(page: Int)
 
-    protected fun savePage(page: Page<TiviShow>, resetOnSave: Boolean) {
+    private fun savePage(page: Page<TiviShow>, resetOnSave: Boolean) {
         databaseTxRunner.runInTransaction {
             if (resetOnSave) deleteEntries() else deletePage(page.page)
             page.items.forEachIndexed { index, show ->
